@@ -53,8 +53,10 @@ public class SwerveModule {
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
     m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
 
-    m_steerEncoder = new Encoder(constants.steerEncoderPin);
-    m_driveEncoder = new Encoder(constants.driveEncoderPin);
+    m_steerEncoder = new DutyCycleEncoder(constants.steerEncoderPin);
+    m_driveEncoder = new DutyCycleEncoder(constants.driveEncoderPin);
+    m_steerEncoder.setDistancePerRotation(constants.steerEncoderRotDis);
+    m_driveEncoder.setDistancePerRotation(constants.driveEncoderRotDis);
 
     m_steerController = m_steerMotor.getPIDController();
     m_driveController = m_driveMotor.getPIDController();
@@ -70,8 +72,7 @@ public class SwerveModule {
   }
 
   public void resetAngleToAbsolute() { // Needs to be updated for new encoder (Not working)
-    m_steerEncoder.setPosition(
-        (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360) - m_constants.offset);
+    m_steerEncoder.reset()
   }
 
   public void burnFlash() {
@@ -85,8 +86,8 @@ public class SwerveModule {
 
   public SwerveModulePosition getModulePosition() {
     if (RobotBase.isReal()) {
-      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.getPosition());
-      m_modulePosition.distanceMeters = m_driveEncoder.getPosition();
+      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.getAbsolutePosition());
+      m_modulePosition.distanceMeters = m_driveEncoder.getDistance();
     } else {
       m_modulePosition.angle = m_simAngle;
       m_modulePosition.distanceMeters = m_simDist;
@@ -96,8 +97,8 @@ public class SwerveModule {
 
   public SwerveModuleState getModuleState() {
     if (RobotBase.isReal()) {
-      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.getPosition());
-      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity();
+      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.getAbsolutePosition());
+      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity(); // TODO
     } else {
       m_moduleState.angle = m_simAngle;
       m_moduleState.speedMetersPerSecond = m_simVel;
