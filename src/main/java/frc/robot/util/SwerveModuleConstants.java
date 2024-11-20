@@ -12,23 +12,18 @@ public class SwerveModuleConstants {
   public int steerId;
   public int steerEncoderId;
 
-  public int steerEncoderPin1;
-  public int steerEncoderPin2;
-  public int driveEncoderPin1;
-  public int driveEncoderPin2;
+  public int steerEncoderPin;
+  public int driveEncoderPin;
 
   public double offset;
 
-  public SwerveModuleConstants(int driveId, int steerId, int steerEncoderId, double offset, int steerEncoderPin1,
-                              int steerEncoderPin2, int driveEncoderPin1, int driveEncoderPin2) {
+  public SwerveModuleConstants(int driveId, int steerId, int steerEncoderId, double offset, int steerEncoderPin, int driveEncoderPin,) {
     this.driveId = driveId;
     this.steerId = steerId;
     this.steerEncoderId = steerEncoderId;
 
-    this.steerEncoderPin1 = steerEncoderPin1;
-    this.steerEncoderPin2 = steerEncoderPin2;
-    this.driveEncoderPin1 = driveEncoderPin1;
-    this.driveEncoderPin2 = driveEncoderPin1;
+    this.steerEncoderPin = steerEncoderPin;
+    this.driveEncoderPin = driveEncoderPin;
 
     this.offset = offset;
   }

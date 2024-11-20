@@ -17,7 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.DeviceConfigurator;
@@ -31,8 +31,8 @@ public class SwerveModule {
   private CANSparkFlex m_driveMotor;
   private CANcoder m_steerAbsEncoder;
 
-  private Encoder m_steerEncoder; // This class is for Quadrature encoders, ours suports both Quadrature and duty cycle, so I went with the first one.
-  private Encoder m_driveEncoder; // This will NEED to be changed to a Duty Cycle encoder, I just messed up. I forgot to RTFM
+  private DutyCycleEncoder m_steerEncoder; 
+  private DutyCycleEncoder m_driveEncoder; 
 
   private SparkPIDController m_steerController;
   private SparkPIDController m_driveController;
@@ -53,8 +53,8 @@ public class SwerveModule {
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
     m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
 
-    m_steerEncoder = new Encoder(constants.steerEncoderPin1, constants.steerEncoderPin2, false)
-    m_driveEncoder = new Encoder(constants.driveEncoderPin1, constants.driveEncoderPin2, false)
+    m_steerEncoder = new Encoder(constants.steerEncoderPin);
+    m_driveEncoder = new Encoder(constants.driveEncoderPin);
 
     m_steerController = m_steerMotor.getPIDController();
     m_driveController = m_driveMotor.getPIDController();
