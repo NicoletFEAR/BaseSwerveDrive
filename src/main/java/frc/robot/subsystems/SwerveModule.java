@@ -12,12 +12,12 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.DeviceConfigurator;
@@ -31,8 +31,8 @@ public class SwerveModule {
   private CANSparkFlex m_driveMotor;
   private CANcoder m_steerAbsEncoder;
 
-  private RelativeEncoder m_steerEncoder;
-  private RelativeEncoder m_driveEncoder;
+  private Encoder m_steerEncoder; // This class is for Quadrature encoders, ours suports both Quadrature and duty cycle, so I went with the first one.
+  private Encoder m_driveEncoder; // This will NEED to be changed to a Duty Cycle encoder, I just messed up. I forgot to RTFM
 
   private SparkPIDController m_steerController;
   private SparkPIDController m_driveController;
@@ -53,8 +53,8 @@ public class SwerveModule {
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
     m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
 
-    m_steerEncoder = m_steerMotor.getEncoder();
-    m_driveEncoder = m_driveMotor.getEncoder();
+    m_steerEncoder = new Encoder(constants.steerEncoderPin1, constants.steerEncoderPin2, false)
+    m_driveEncoder = new Encoder(constants.driveEncoderPin1, constants.driveEncoderPin2, false)
 
     m_steerController = m_steerMotor.getPIDController();
     m_driveController = m_driveMotor.getPIDController();
@@ -69,7 +69,7 @@ public class SwerveModule {
     DeviceConfigurator.configureCANcoder(m_steerAbsEncoder);
   }
 
-  public void resetAngleToAbsolute() {
+  public void resetAngleToAbsolute() { // Needs to be updated for new encoder (Not working)
     m_steerEncoder.setPosition(
         (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360) - m_constants.offset);
   }
