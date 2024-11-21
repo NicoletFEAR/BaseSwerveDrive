@@ -86,7 +86,7 @@ public class SwerveModule {
 
   public SwerveModulePosition getModulePosition() {
     if (RobotBase.isReal()) {
-      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.getAbsolutePosition());
+      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.get());
       m_modulePosition.distanceMeters = m_driveEncoder.getDistance();
     } else {
       m_modulePosition.angle = m_simAngle;
@@ -97,7 +97,7 @@ public class SwerveModule {
 
   public SwerveModuleState getModuleState() {
     if (RobotBase.isReal()) {
-      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.getAbsolutePosition());
+      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.get());
       m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity(); // TODO
     } else {
       m_moduleState.angle = m_simAngle;
