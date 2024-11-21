@@ -22,8 +22,8 @@ public class SwerveModuleConstants {
     this.steerId = steerId;
     this.steerEncoderId = steerEncoderId;
 
-    this.steerEncoderRotDis = steerEncoderRotDis;
-    this.driveEncoderRotDis = driveEncoderRotDis;
+    this.steerEncoderRotDis = steerEncoderRotDis; // In meters
+    this.driveEncoderRotDis = driveEncoderRotDis; // In meters
 
     this.offset = offset;
   }

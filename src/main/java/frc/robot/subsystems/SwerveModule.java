@@ -31,11 +31,11 @@ public class SwerveModule {
   private CANSparkFlex m_driveMotor;
   private CANcoder m_steerAbsEncoder;
 
-  private DutyCycleEncoder m_steerEncoder; 
-  private DutyCycleEncoder m_driveEncoder; 
+  private SparkRelativeEncoder m_steerEncoder; 
+  private SparkAbsoluteEncoder m_driveEncoder; 
 
-  private SparkAbsoluteEncoder m_steerController;
-  private SparkAbsoluteEncoder m_driveController;
+  private SparkPIDController m_steerController;
+  private SparkPIDController m_driveController;
 
   private SwerveModulePosition m_modulePosition;
   private SwerveModuleState m_moduleState;
@@ -53,7 +53,7 @@ public class SwerveModule {
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
     m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
 
-    m_steerEncoder = m_steerMotor.getAbsoluteEncoder();
+    m_steerEncoder = m_steerMotor.getEncoder();
     m_driveEncoder = m_driveMotor.getAbsoluteEncoder();
 
     m_steerController = m_steerMotor.getPIDController();
@@ -70,8 +70,9 @@ public class SwerveModule {
   }
 
   public void resetAngleToAbsolute() { // Needs to be updated for new encoder (Not working)
-    m_steerEncoder.reset()
-  }
+    m_steerEncoder.setPosition(
+        (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360) - m_constants.offset);
+    }
 
   public void burnFlash() {
     m_driveMotor.burnFlash();
@@ -96,7 +97,7 @@ public class SwerveModule {
   public SwerveModuleState getModuleState() {
     if (RobotBase.isReal()) {
       m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.getPosition());
-      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity();
+      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity(); 
     } else {
       m_moduleState.angle = m_simAngle;
       m_moduleState.speedMetersPerSecond = m_simVel;
