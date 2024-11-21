@@ -13,11 +13,11 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.DeviceConfigurator;
@@ -34,8 +34,8 @@ public class SwerveModule {
   private DutyCycleEncoder m_steerEncoder; 
   private DutyCycleEncoder m_driveEncoder; 
 
-  private SparkPIDController m_steerController;
-  private SparkPIDController m_driveController;
+  private SparkAbsoluteEncoder m_steerController;
+  private SparkAbsoluteEncoder m_driveController;
 
   private SwerveModulePosition m_modulePosition;
   private SwerveModuleState m_moduleState;
@@ -53,10 +53,8 @@ public class SwerveModule {
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
     m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
 
-    m_steerEncoder = new DutyCycleEncoder(constants.steerEncoderPin);
-    m_driveEncoder = new DutyCycleEncoder(constants.driveEncoderPin);
-    m_steerEncoder.setDistancePerRotation(constants.steerEncoderRotDis);
-    m_driveEncoder.setDistancePerRotation(constants.driveEncoderRotDis);
+    m_steerEncoder = m_steerMotor.getAbsoluteEncoder();
+    m_driveEncoder = m_driveMotor.getAbsoluteEncoder();
 
     m_steerController = m_steerMotor.getPIDController();
     m_driveController = m_driveMotor.getPIDController();
@@ -86,8 +84,8 @@ public class SwerveModule {
 
   public SwerveModulePosition getModulePosition() {
     if (RobotBase.isReal()) {
-      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.get());
-      m_modulePosition.distanceMeters = m_driveEncoder.getDistance();
+      m_modulePosition.angle = Rotation2d.fromDegrees(m_steerEncoder.getPosition());
+      m_modulePosition.distanceMeters = m_driveEncoder.getPosition() * constants.driveEncoderRotDis;
     } else {
       m_modulePosition.angle = m_simAngle;
       m_modulePosition.distanceMeters = m_simDist;
@@ -97,8 +95,8 @@ public class SwerveModule {
 
   public SwerveModuleState getModuleState() {
     if (RobotBase.isReal()) {
-      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.get());
-      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity(); // TODO
+      m_moduleState.angle = Rotation2d.fromDegrees(m_steerEncoder.getPosition());
+      m_moduleState.speedMetersPerSecond = m_driveEncoder.getVelocity();
     } else {
       m_moduleState.angle = m_simAngle;
       m_moduleState.speedMetersPerSecond = m_simVel;
