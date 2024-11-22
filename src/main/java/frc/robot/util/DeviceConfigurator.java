@@ -37,6 +37,7 @@ public class DeviceConfigurator {
 
   public static void configureSparkFlexDriveMotor(CANSparkFlex motor) {
     RelativeEncoder encoder = motor.getEncoder();
+    SparkAbsoluteEncoder encoderABS = motor.getAbsoluteEncoder()
     SparkPIDController controller = motor.getPIDController();
 
     motor.setInverted(true);
@@ -46,6 +47,9 @@ public class DeviceConfigurator {
 
     encoder.setPositionConversionFactor(DriveConstants.kDriveRevToMeters);
     encoder.setVelocityConversionFactor(DriveConstants.kDriveRpmToMetersPerSecond);
+
+    encoderABS.setPositionConversionFactor(DriveConstants.kDriveRevToMeters);
+    encoderABS.setVelocityConversionFactor(DriveConstants.kDriveRevToMeters);
 
     controller.setP(DriveConstants.drivekp);
     controller.setI(DriveConstants.driveki);
