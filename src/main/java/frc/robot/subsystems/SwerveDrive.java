@@ -21,15 +21,25 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team6328.swerve.SwerveSetpoint;
+import frc.lib.team6328.swerve.SwerveSetpointGenerator;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotContainer;
 import frc.robot.util.Utils;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveDrive extends SubsystemBase {
@@ -42,10 +52,12 @@ public class SwerveDrive extends SubsystemBase {
 
   private SwerveDriveKinematics m_kinematics;
   private SwerveDrivePoseEstimator m_poseEstimator;
+  private SwerveSetpointGenerator m_setpointGenerator;
 
-  private SwerveModuleState[] m_moduleStates;
+  private SwerveModuleState[] m_desiredModuleStates;
   private SwerveModulePosition[] m_modulePositions;
   private ChassisSpeeds m_chassisSpeeds;
+  private SwerveSetpoint m_optimizedSetpoint;
 
   private DriveMode m_driveMode = DriveMode.TELEOP;
 
@@ -66,7 +78,7 @@ public class SwerveDrive extends SubsystemBase {
 
     m_kinematics = new SwerveDriveKinematics(DriveConstants.kModuleTranslations);
 
-    m_moduleStates =
+    m_desiredModuleStates =
         new SwerveModuleState[] {
           new SwerveModuleState(),
           new SwerveModuleState(),
@@ -81,6 +93,15 @@ public class SwerveDrive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
         };
+
+    m_setpointGenerator =
+        SwerveSetpointGenerator.builder()
+            .kinematics(m_kinematics)
+            .moduleLocations(DriveConstants.kModuleTranslations)
+            .build();
+
+    m_optimizedSetpoint = new SwerveSetpoint(new ChassisSpeeds(), m_desiredModuleStates);
+    m_chassisSpeeds = new ChassisSpeeds();
 
     Timer.delay(1.0);
     resetModulesToAbsolute();
@@ -151,10 +172,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public SwerveModuleState[] getModuleStates() {
     for (int i = 0; i < m_modules.length; i++) {
-      m_moduleStates[i] = m_modules[i].getModuleState();
+      m_desiredModuleStates[i] = m_modules[i].getModuleState();
     }
 
-    return m_moduleStates;
+    return m_desiredModuleStates;
   }
 
   public Pose2d getPose() {
@@ -186,10 +207,11 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void setModuleStates(boolean isOpenLoop) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(m_moduleStates, DriveConstants.kMaxModuleSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        m_desiredModuleStates, DriveConstants.kMaxModuleSpeed);
 
     for (int i = 0; i < m_modules.length; i++) {
-      m_modules[i].setSwerveModuleState(m_moduleStates[i], isOpenLoop);
+      m_modules[i].setSwerveModuleState(m_desiredModuleStates[i], isOpenLoop);
     }
   }
 
@@ -231,18 +253,57 @@ public class SwerveDrive extends SubsystemBase {
 
         m_chassisSpeeds = ChassisSpeeds.discretize(m_chassisSpeeds, Constants.kdt);
 
-        m_moduleStates = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        m_desiredModuleStates = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+
+        m_optimizedSetpoint =
+            m_setpointGenerator.generateSetpoint(
+                DriveConstants.kModuleLimits, m_optimizedSetpoint, m_chassisSpeeds, Constants.kdt);
+
+        if (isOpenLoop) {
+          setModuleStates(m_optimizedSetpoint.moduleStates(), isOpenLoop);
+        } else {
+          setModuleStates(m_desiredModuleStates, isOpenLoop);
+        }
 
         if (RobotBase.isSimulation())
           m_simYaw += Units.radiansToDegrees(m_chassisSpeeds.omegaRadiansPerSecond * Constants.kdt);
 
         break;
       case XWHEELS:
-        Utils.copyModuleStates(DriveConstants.kXWheels, m_moduleStates);
+        Utils.copyModuleStates(DriveConstants.kXWheels, m_desiredModuleStates);
+        setModuleStates(isOpenLoop);
         break;
     }
+  }
 
-    setModuleStates(isOpenLoop);
+  public void runVolts(Measure<Voltage> volts) {
+    for (SwerveModule module : m_modules) {
+      module.runVolts(volts, 0);
+    }
+  }
+
+  public Command characterizeDrivebase(BooleanSupplier finishRoutine) {
+    var sysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage), null, this));
+
+    return new SequentialCommandGroup(
+        new PrintCommand("Starting"),
+        sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward).until(finishRoutine),
+        new WaitCommand(1.0),
+        new PrintCommand("Starting"),
+        sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse).until(finishRoutine),
+        new PrintCommand("Starting"),
+        new WaitCommand(1.0),
+        sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward).until(finishRoutine),
+        new PrintCommand("Starting"),
+        new WaitCommand(1.0),
+        sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse).until(finishRoutine));
   }
 
   @Override
@@ -254,6 +315,11 @@ public class SwerveDrive extends SubsystemBase {
     Logger.recordOutput("Swerve/Pose", m_poseEstimator.getEstimatedPosition());
     Logger.recordOutput("Swerve/Module Positions", getModulePositions());
     Logger.recordOutput("Swerve/Module States", getModuleStates());
+    Logger.recordOutput("Swerve/Chassis Speeds", m_chassisSpeeds);
+    Logger.recordOutput("Swerve/Robot Relative Chassis Speeds", getRobotRelativeSpeeds());
+    Logger.recordOutput(
+        "Swerve/Optimized Desired Module States", m_optimizedSetpoint.moduleStates());
+    Logger.recordOutput("Swerve/Desired Module States", m_desiredModuleStates);
   }
 
   public enum DriveMode {

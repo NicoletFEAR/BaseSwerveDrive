@@ -17,6 +17,9 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -103,6 +106,11 @@ public class SwerveModule {
       m_moduleState.speedMetersPerSecond = m_simVel;
     }
     return m_moduleState;
+  }
+
+  public void runVolts(Measure<Voltage> volts, double position) {
+    m_steerController.setReference(position, ControlType.kPosition);
+    m_driveMotor.setVoltage(volts.in(Units.Volts));
   }
 
   public void setSwerveModuleState(SwerveModuleState moduleState, boolean isOpenLoop) {

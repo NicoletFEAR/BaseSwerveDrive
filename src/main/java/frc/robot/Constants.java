@@ -12,10 +12,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController.Axis;
+import frc.lib.team6328.swerve.ModuleLimits;
 import frc.robot.util.SwerveModuleConstants;
 
 public final class Constants {
   public static final double kdt = 0.02;
+
+  public static final Translation2d kFieldTopRight = new Translation2d(8.195, 16.517);
 
   public final class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -27,12 +30,22 @@ public final class Constants {
     public static final double kPercentModifier = 1;
   }
 
+  public final class VisionConstants {
+    public static final double kTargetAmountConstant = 2.0;
+    public static final double kSpeedsConstant = 1.0;
+    public static final double kRotationsConstant = 1.5;
+    public static final double kDistanceConstant = 0.25;
+    public static final double kAreaConstant = 0.01;
+
+    public static final double kOffsetTolerance = 1.0;
+  }
+
   public final class DriveConstants {
     public static final int kPigeonId = 0;
 
     public static final double kSwerveDeadBand = 0.075;
 
-    public static final double kMaxModuleSpeed = Units.feetToMeters(20.1);
+    public static final double kMaxModuleSpeed = Units.feetToMeters(16.25);
     public static final double kMaxRotationsPerSecond = Math.PI * 3.0;
 
     public static final double kTrackWidth =
@@ -69,6 +82,10 @@ public final class Constants {
     public static final double kDriveRevToMeters = ((kWheelDiameter * Math.PI) / kDriveGearRatio);
     public static final double kDriveRpmToMetersPerSecond = kDriveRevToMeters / 60.0;
     public static final double kTurnRotationsToDegrees = 360.0 / kTurnGearRatio;
+
+    public static final ModuleLimits kModuleLimits =
+        new ModuleLimits(
+            Units.feetToMeters(16.25), Units.feetToMeters(125.0), Units.degreesToRadians(1080.0));
 
     public static double drivekp = 0.15751;
     public static double driveki = 0.0;

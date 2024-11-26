@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.characterization.WheelCharacterization;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.commands.TurnToAngle;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive.DriveMode;
 
@@ -36,7 +35,7 @@ public class RobotContainer {
             OperatorConstants.kStrafeAxis,
             OperatorConstants.kSteerAxis,
             OperatorConstants.kPercentModifier,
-            false,
+            true,
             true));
 
     configureBindings();
@@ -47,10 +46,14 @@ public class RobotContainer {
         .a()
         .onTrue(Commands.runOnce(() -> m_driveBase.setDriveMode(DriveMode.XWHEELS), m_driveBase));
 
-    m_driverController.b().onTrue(new TurnToAngle(100));
-    m_driverController.x().onTrue(new TurnToAngle(200));
+    // m_driverController.b().onTrue(new TurnToAngle(100));
+    // m_driverController.x().onTrue(new TurnToAngle(200));
 
     m_driverController.y().onTrue(new WheelCharacterization(m_driveBase));
+
+    m_driverController
+        .start()
+        .onTrue(m_driveBase.characterizeDrivebase(() -> m_driverController.back().getAsBoolean()));
   }
 
   public Command getAutonomousCommand() {

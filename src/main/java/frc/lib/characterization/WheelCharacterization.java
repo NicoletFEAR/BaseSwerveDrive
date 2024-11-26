@@ -69,8 +69,6 @@ public class WheelCharacterization extends Command {
 
     averageWheelPosition /= 4.0;
 
-    System.out.println(accumGyroYawRads);
-
     currentEffectiveWheelRadius =
         (accumGyroYawRads * DriveConstants.kDrivebaseRadius) / averageWheelPosition;
 

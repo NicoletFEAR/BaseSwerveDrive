@@ -49,6 +49,7 @@ public class TeleopSwerve extends Command {
     m_steerAxis = steerAxis;
 
     m_percentModifier = percentModifier;
+    m_isOpenLoop = isOpenLoop;
 
     m_isFieldRelative = isFieldRelative;
 
