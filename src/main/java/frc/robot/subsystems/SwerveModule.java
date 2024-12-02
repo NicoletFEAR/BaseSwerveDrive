@@ -7,7 +7,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -29,7 +29,7 @@ public class SwerveModule {
 
   private CANSparkMax m_steerMotor;
   private CANSparkFlex m_driveMotor;
-  private CANcoder m_steerAbsEncoder;
+  private AbsoluteEncoder m_steerAbsEncoder;
 
   private RelativeEncoder m_steerEncoder;
   private RelativeEncoder m_driveEncoder;
@@ -59,19 +59,17 @@ public class SwerveModule {
     m_steerController = m_steerMotor.getPIDController();
     m_driveController = m_driveMotor.getPIDController();
 
-    m_steerAbsEncoder = new CANcoder(constants.steerEncoderId);
+    m_steerAbsEncoder = m_steerMotor.getAbsoluteEncoder();
 
     m_modulePosition = new SwerveModulePosition();
     m_moduleState = new SwerveModuleState();
 
     DeviceConfigurator.configureSparkMaxSteerMotor(m_steerMotor);
     DeviceConfigurator.configureSparkFlexDriveMotor(m_driveMotor);
-    DeviceConfigurator.configureCANcoder(m_steerAbsEncoder);
   }
 
   public void resetAngleToAbsolute() {
-    m_steerEncoder.setPosition(
-        (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360) - m_constants.offset);
+    m_steerEncoder.setPosition((m_steerAbsEncoder.getPosition() * 360));
   }
 
   public void burnFlash() {
@@ -81,6 +79,10 @@ public class SwerveModule {
 
   public Rotation2d getModuleHeading() {
     return m_modulePosition.angle;
+  }
+
+  public double getAbsolutePosition() {
+    return m_steerAbsEncoder.getPosition();
   }
 
   public SwerveModulePosition getModulePosition() {

@@ -81,8 +81,8 @@ public final class Constants {
     public static double turnkd = 0.01;
     public static double turnkff = 0.0;
 
-    public static final int kFrontLeftDriveMotor = 12;
-    public static final int kFrontLeftSteerMotor = 11;
+    public static final int kFrontLeftDriveMotor = 30;
+    public static final int kFrontLeftSteerMotor = 14;
     public static final int kFrontLeftSteerEncoder = 1;
     public static final double kFrontLeftOffset =
         0.637451; // 0.719971; //0.597900; // In Rotations not degrees
@@ -102,7 +102,7 @@ public final class Constants {
             kFrontRightSteerEncoder,
             kFrontRightSteerOffset);
 
-    public static final int kBackLeftDriveMotor = 14;
+    public static final int kBackLeftDriveMotor = 45;
     public static final int kBackLeftSteerMotor = 13;
     public static final int kBackLeftSteerEncoder = 3;
     public static final double kBackLeftSteerOffset =
