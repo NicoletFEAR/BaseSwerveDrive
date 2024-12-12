@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -38,7 +39,28 @@ public class DeviceConfigurator {
     controller.setFF(DriveConstants.turnkff);
   }
 
-  public static void configureSparkFlexDriveMotor(CANSparkMax motor) {
+  public static void configureSparkMaxDriveMotor(CANSparkMax motor) {
+    RelativeEncoder encoder = motor.getEncoder();
+    SparkPIDController controller = motor.getPIDController();
+
+    motor.restoreFactoryDefaults();
+
+    motor.setInverted(true);
+    motor.setSmartCurrentLimit(80);
+    motor.setIdleMode(IdleMode.kBrake);
+    motor.setOpenLoopRampRate(DriveConstants.driverampRate);
+
+    encoder.setPositionConversionFactor(DriveConstants.kDriveRevToMeters);
+    encoder.setVelocityConversionFactor(DriveConstants.kDriveRpmToMetersPerSecond);
+    encoder.setPosition(0);
+
+    controller.setP(DriveConstants.drivekp);
+    controller.setI(DriveConstants.driveki);
+    controller.setD(DriveConstants.drivekd);
+    controller.setFF(DriveConstants.drivekff);
+  }
+
+  public static void configureSparkFlexDriveMotor(CANSparkFlex motor) {
     RelativeEncoder encoder = motor.getEncoder();
     SparkPIDController controller = motor.getPIDController();
 

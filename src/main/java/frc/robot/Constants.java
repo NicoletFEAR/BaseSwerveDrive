@@ -27,7 +27,8 @@ public final class Constants {
     public static final int kStrafeAxis = Axis.kLeftX.value;
     public static final int kSteerAxis = Axis.kRightX.value;
 
-    public static final double kPercentModifier = 1;
+    public static final double kDefaultSpeed = 1;
+    public static final double kSlowSpeed = 0.25;
   }
 
   public final class VisionConstants {
@@ -49,10 +50,10 @@ public final class Constants {
     public static final double kMaxRotationsPerSecond = Math.PI * 3.0;
 
     public static final double kTrackWidth =
-        Units.inchesToMeters(20.67); // Distance between centers of right and left wheels on robot
+        Units.inchesToMeters(20.75); // Distance between centers of right and left wheels on robot
 
     public static final double kWheelBase =
-        Units.inchesToMeters(20.67); // Distance between centers of front and back wheels on robot
+        Units.inchesToMeters(20.75); // Distance between centers of front and back wheels on robot
 
     public static final double kDrivebaseRadius =
         Math.sqrt(Math.pow(kTrackWidth / 2, 2) + Math.pow(kWheelBase / 2, 2));
@@ -71,12 +72,14 @@ public final class Constants {
       new SwerveModuleState(0, Rotation2d.fromDegrees(-135)),
     };
 
-    public static final double kDriveGearRatio = 6.75; // MK4i L2 driving gear, find on sds website
+    public static final double kDriveGearRatio =
+        1 / ((14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)); // sds L2 gear ratio
 
-    public static final double kTurnGearRatio =
-        150.0 / 7.0; // MK4i turning ratio MK4i Neo, find on sds website
+    public static final double kTurnGearRatio = 150.0 / 7.0; // MK4i turning ratio
 
-    public static final double kWheelDiameter = Units.inchesToMeters(3.915); // Wheel diameter
+    public static final double kWheelDiameter =
+        Units.inchesToMeters(
+            3.915); // Run the Wheel Characterization command to find the wheel diameter
 
     public static final double kDriveRevToMeters = ((kWheelDiameter * Math.PI) / kDriveGearRatio);
     public static final double kDriveRpmToMetersPerSecond = kDriveRevToMeters / 60.0;
@@ -100,8 +103,7 @@ public final class Constants {
     public static final int kFrontLeftDriveMotor = 12;
     public static final int kFrontLeftSteerMotor = 11;
     public static final int kFrontLeftSteerEncoder = 1;
-    public static final double kFrontLeftOffset =
-        -0.905517578125; // 0.719971; //0.597900; // In Rotations not degrees
+    public static final double kFrontLeftOffset = -0.905517578125;
     public static final SwerveModuleConstants kFrontLeft =
         new SwerveModuleConstants(
             kFrontLeftDriveMotor, kFrontLeftSteerMotor, kFrontLeftSteerEncoder, kFrontLeftOffset);
@@ -109,8 +111,7 @@ public final class Constants {
     public static final int kFrontRightDriveMotor = 18;
     public static final int kFrontRightSteerMotor = 17;
     public static final int kFrontRightSteerEncoder = 7;
-    public static final double kFrontRightSteerOffset =
-        -0.5986328125; // 0.049561; // In Rotations not degrees
+    public static final double kFrontRightSteerOffset = -0.5986328125;
     public static final SwerveModuleConstants kFrontRight =
         new SwerveModuleConstants(
             kFrontRightDriveMotor,
@@ -121,8 +122,7 @@ public final class Constants {
     public static final int kBackLeftDriveMotor = 14;
     public static final int kBackLeftSteerMotor = 13;
     public static final int kBackLeftSteerEncoder = 3;
-    public static final double kBackLeftSteerOffset =
-        -0.60546875; // 0.504395 ; // In Rotations not degrees
+    public static final double kBackLeftSteerOffset = -0.60546875;
     public static final SwerveModuleConstants kBackLeft =
         new SwerveModuleConstants(
             kBackLeftDriveMotor, kBackLeftSteerMotor, kBackLeftSteerEncoder, kBackLeftSteerOffset);
@@ -130,8 +130,7 @@ public final class Constants {
     public static final int kBackRightDriveMotor = 16;
     public static final int kBackRightSteerMotor = 15;
     public static final int kBackRightSteerEncoder = 5;
-    public static final double kBackRightSteerOffset =
-        -0.811279296875; // 0.829590 ;//0.834473; // In Rotations not degrees
+    public static final double kBackRightSteerOffset = -0.811279296875;
     public static final SwerveModuleConstants kBackRight =
         new SwerveModuleConstants(
             kBackRightDriveMotor,

@@ -34,7 +34,7 @@ public class RobotContainer {
             OperatorConstants.kThrottleAxis,
             OperatorConstants.kStrafeAxis,
             OperatorConstants.kSteerAxis,
-            OperatorConstants.kPercentModifier,
+            OperatorConstants.kDefaultSpeed,
             true,
             true));
 
@@ -42,6 +42,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    m_driverController
+        .leftBumper()
+        .whileTrue(
+            new TeleopSwerve(
+                m_driverController,
+                OperatorConstants.kThrottleAxis,
+                OperatorConstants.kStrafeAxis,
+                OperatorConstants.kSteerAxis,
+                OperatorConstants.kSlowSpeed,
+                true,
+                true));
+
     m_driverController
         .a()
         .onTrue(Commands.runOnce(() -> m_driveBase.setDriveMode(DriveMode.XWHEELS), m_driveBase));

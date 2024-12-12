@@ -68,7 +68,7 @@ public class SwerveModule {
     m_moduleState = new SwerveModuleState();
 
     DeviceConfigurator.configureSparkMaxSteerMotor(m_steerMotor);
-    DeviceConfigurator.configureSparkFlexDriveMotor(m_driveMotor);
+    DeviceConfigurator.configureSparkMaxDriveMotor(m_driveMotor);
     DeviceConfigurator.configureCANcoder(m_steerAbsEncoder, m_constants.offset);
   }
 

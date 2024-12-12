@@ -15,9 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.urcl.URCL;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -32,17 +30,17 @@ public class Robot extends LoggedRobot {
     if (isReal() || isSimulation()) {
       // Logger.addDataReceiver(
       //     new WPILOGWriter("C:/Users/Ari/Documents/WPILogs")); // Log to a USB stick ("/U/logs")
-      // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     } else {
       setUseTiming(false); // Run as fast as possible
       String logPath =
           LogFileUtil
               .findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(
-          new WPILOGWriter(
-              LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+      // Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      // Logger.addDataReceiver(
+      //     new WPILOGWriter(
+      //         LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
 
     // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the
@@ -51,9 +49,9 @@ public class Robot extends LoggedRobot {
     // be added.
 
     DataLogManager.start();
-    URCL.start();
+    // URCL.start();
 
-    Logger.registerURCL(URCL.startExternal());
+    // Logger.registerURCL(URCL.startExternal());
     Logger.start();
 
     m_robotContainer = new RobotContainer();
