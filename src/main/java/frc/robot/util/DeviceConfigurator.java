@@ -30,6 +30,8 @@ public class DeviceConfigurator {
 
     encoder.setPositionConversionFactor(DriveConstants.kTurnRotationsToDegrees);
 
+    encoder.setPosition(0);
+
     controller.setP(DriveConstants.turnkp);
     controller.setI(DriveConstants.turnki);
     controller.setD(DriveConstants.turnkd);
@@ -49,6 +51,7 @@ public class DeviceConfigurator {
 
     encoder.setPositionConversionFactor(DriveConstants.kDriveRevToMeters);
     encoder.setVelocityConversionFactor(DriveConstants.kDriveRpmToMetersPerSecond);
+    encoder.setPosition(0);
 
     controller.setP(DriveConstants.drivekp);
     controller.setI(DriveConstants.driveki);
@@ -63,7 +66,7 @@ public class DeviceConfigurator {
 
     configuration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
     configuration.MagnetSensor.MagnetOffset = offset;
-    configuration.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    configuration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
     encoder.getConfigurator().apply(configuration);
   }
