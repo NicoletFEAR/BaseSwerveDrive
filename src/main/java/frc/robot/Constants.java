@@ -42,8 +42,6 @@ public final class Constants {
   }
 
   public final class DriveConstants {
-    public static final int kPigeonId = 0;
-
     public static final double kSwerveDeadBand = 0.075;
 
     public static final double kMaxModuleSpeed = Units.feetToMeters(16.25);
@@ -99,6 +97,8 @@ public final class Constants {
     public static double turnki = 0.0;
     public static double turnkd = 0.01;
     public static double turnkff = 0.0;
+
+    public static final int kPigeonId = 0;
 
     public static final int kFrontLeftDriveMotor = 12;
     public static final int kFrontLeftSteerMotor = 11;

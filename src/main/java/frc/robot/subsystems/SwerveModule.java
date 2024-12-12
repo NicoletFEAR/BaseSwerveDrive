@@ -20,11 +20,11 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.lib.team6328.GeomUtil;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.DeviceConfigurator;
 import frc.robot.util.SwerveModuleConstants;
+import frc.robot.util.Utils;
 
 public class SwerveModule {
 
@@ -118,7 +118,7 @@ public class SwerveModule {
 
   public void setSwerveModuleState(SwerveModuleState moduleState, boolean isOpenLoop) {
 
-    moduleState = GeomUtil.optimize(moduleState, getModuleHeading());
+    moduleState = Utils.optimize(moduleState, getModuleHeading());
 
     moduleState.speedMetersPerSecond *= moduleState.angle.minus(getModuleHeading()).getCos();
 

@@ -13,6 +13,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -65,6 +66,10 @@ public class SwerveDrive extends SubsystemBase {
   private Field2d m_field;
 
   private double m_simYaw;
+
+  private double m_angleToSnap = Double.POSITIVE_INFINITY;
+
+  private PIDController angleController = new PIDController(.016, 0.003, 0.0);
 
   public SwerveDrive() {
     m_modules =
@@ -121,6 +126,8 @@ public class SwerveDrive extends SubsystemBase {
 
     m_field = new Field2d();
     RobotContainer.m_mainTab.add(m_field);
+
+    angleController.setTolerance(1);
 
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplier
@@ -234,6 +241,10 @@ public class SwerveDrive extends SubsystemBase {
     m_driveMode = driveMode;
   }
 
+  public void setAngleToSnap(double angleToSnap) {
+    m_angleToSnap = angleToSnap;
+  }
+
   public void drive(
       double throttle, double strafe, double steer, boolean isOpenLoop, boolean isFieldRelative) {
 
@@ -245,6 +256,16 @@ public class SwerveDrive extends SubsystemBase {
       case TELEOP:
         throttle *= DriveConstants.kMaxModuleSpeed;
         strafe *= DriveConstants.kMaxModuleSpeed;
+
+        if (m_angleToSnap != Double.POSITIVE_INFINITY) {
+          steer =
+              angleController.calculate(
+                  Utils.getAdjustedYawDegrees(getYaw().getDegrees(), m_angleToSnap), 180);
+          steer *= DriveConstants.kMaxModuleSpeed;
+          
+          if (angleController.atSetpoint()) m_angleToSnap = Double.POSITIVE_INFINITY;
+        }
+
         steer *= DriveConstants.kMaxModuleSpeed;
 
         m_chassisSpeeds =
