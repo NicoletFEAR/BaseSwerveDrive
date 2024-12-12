@@ -9,7 +9,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -31,7 +30,7 @@ public class SwerveModule {
   SwerveModuleConstants m_constants;
 
   private CANSparkMax m_steerMotor;
-  private CANSparkFlex m_driveMotor;
+  private CANSparkMax m_driveMotor;
   private CANcoder m_steerAbsEncoder;
 
   private RelativeEncoder m_steerEncoder;
@@ -54,7 +53,7 @@ public class SwerveModule {
     m_constants = constants;
 
     m_steerMotor = new CANSparkMax(constants.steerId, MotorType.kBrushless);
-    m_driveMotor = new CANSparkFlex(constants.driveId, MotorType.kBrushless);
+    m_driveMotor = new CANSparkMax(constants.driveId, MotorType.kBrushless);
 
     m_steerEncoder = m_steerMotor.getEncoder();
     m_driveEncoder = m_driveMotor.getEncoder();
@@ -69,12 +68,11 @@ public class SwerveModule {
 
     DeviceConfigurator.configureSparkMaxSteerMotor(m_steerMotor);
     DeviceConfigurator.configureSparkFlexDriveMotor(m_driveMotor);
-    DeviceConfigurator.configureCANcoder(m_steerAbsEncoder);
+    DeviceConfigurator.configureCANcoder(m_steerAbsEncoder, m_constants.offset);
   }
 
   public void resetAngleToAbsolute() {
-    m_steerEncoder.setPosition(
-        (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360) - m_constants.offset);
+    m_steerEncoder.setPosition((m_steerAbsEncoder.getAbsolutePosition().getValue() * 360));
   }
 
   public void burnFlash() {
@@ -84,6 +82,10 @@ public class SwerveModule {
 
   public Rotation2d getModuleHeading() {
     return m_modulePosition.angle;
+  }
+
+  public double getAbsolutePosition() {
+    return (m_steerAbsEncoder.getAbsolutePosition().getValue() * 360);
   }
 
   public SwerveModulePosition getModulePosition() {

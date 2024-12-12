@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -255,12 +256,13 @@ public class SwerveDrive extends SubsystemBase {
 
         m_desiredModuleStates = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
 
-        m_optimizedSetpoint =
-            m_setpointGenerator.generateSetpoint(
-                DriveConstants.kModuleLimits, m_optimizedSetpoint, m_chassisSpeeds, Constants.kdt);
+        // m_optimizedSetpoint =
+        //     m_setpointGenerator.generateSetpoint(
+        //         DriveConstants.kModuleLimits, m_optimizedSetpoint, m_chassisSpeeds,
+        // Constants.kdt);
 
         if (isOpenLoop) {
-          setModuleStates(m_optimizedSetpoint.moduleStates(), isOpenLoop);
+          setModuleStates(m_desiredModuleStates, isOpenLoop);
         } else {
           setModuleStates(m_desiredModuleStates, isOpenLoop);
         }
@@ -320,6 +322,16 @@ public class SwerveDrive extends SubsystemBase {
     Logger.recordOutput(
         "Swerve/Optimized Desired Module States", m_optimizedSetpoint.moduleStates());
     Logger.recordOutput("Swerve/Desired Module States", m_desiredModuleStates);
+
+    for (int i = 0; i < 4; i++) {
+      SmartDashboard.putNumber(
+          "Swerve Module " + i + " angle", m_modulePositions[i].angle.getRotations());
+    }
+
+    for (int i = 0; i < 4; i++) {
+      SmartDashboard.putNumber(
+          "Swerve Module " + i + " absolute angle", m_modules[i].getAbsolutePosition());
+    }
   }
 
   public enum DriveMode {

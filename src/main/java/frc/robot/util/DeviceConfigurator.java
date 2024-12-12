@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -22,6 +21,8 @@ public class DeviceConfigurator {
   public static void configureSparkMaxSteerMotor(CANSparkMax motor) {
     RelativeEncoder encoder = motor.getEncoder();
     SparkPIDController controller = motor.getPIDController();
+
+    motor.restoreFactoryDefaults();
 
     motor.setInverted(true);
     motor.setSmartCurrentLimit(40);
@@ -35,9 +36,11 @@ public class DeviceConfigurator {
     controller.setFF(DriveConstants.turnkff);
   }
 
-  public static void configureSparkFlexDriveMotor(CANSparkFlex motor) {
+  public static void configureSparkFlexDriveMotor(CANSparkMax motor) {
     RelativeEncoder encoder = motor.getEncoder();
     SparkPIDController controller = motor.getPIDController();
+
+    motor.restoreFactoryDefaults();
 
     motor.setInverted(true);
     motor.setSmartCurrentLimit(80);
@@ -53,13 +56,13 @@ public class DeviceConfigurator {
     controller.setFF(DriveConstants.drivekff);
   }
 
-  public static void configureCANcoder(CANcoder encoder) {
+  public static void configureCANcoder(CANcoder encoder, double offset) {
     CANcoderConfiguration configuration = new CANcoderConfiguration();
 
     encoder.getConfigurator().apply(configuration);
 
     configuration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-    configuration.MagnetSensor.MagnetOffset = 0;
+    configuration.MagnetSensor.MagnetOffset = offset;
     configuration.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
 
     encoder.getConfigurator().apply(configuration);

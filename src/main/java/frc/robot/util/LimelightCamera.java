@@ -19,8 +19,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 public class LimelightCamera {
@@ -50,7 +48,6 @@ public class LimelightCamera {
     Logger.recordOutput("Vision/" + m_cameraName + "/isPoseInField", isPoseInField);
     Logger.recordOutput("Vision/" + m_cameraName + "/isWithinTolerance", isWithinTolerance);
 
-
     double tagAmountTrust = VisionConstants.kTargetAmountConstant * poseEstimate.tagCount;
     double speedTrust =
         Math.sqrt(
@@ -67,7 +64,8 @@ public class LimelightCamera {
     Logger.recordOutput("Vision/" + m_cameraName + "/distanceTrust", distanceTrust);
     Logger.recordOutput("Vision/" + m_cameraName + "/areaTrust", areaTrust);
 
-    double trust = Math.max(speedTrust + rotationTrust - tagAmountTrust + distanceTrust - areaTrust, 0.1);
+    double trust =
+        Math.max(speedTrust + rotationTrust - tagAmountTrust + distanceTrust - areaTrust, 0.1);
 
     Matrix<N3, N1> poseMatrix = VecBuilder.fill(trust, trust, 9999999);
 
