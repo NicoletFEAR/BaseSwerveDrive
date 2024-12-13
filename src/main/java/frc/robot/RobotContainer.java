@@ -7,11 +7,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import frc.lib.characterization.WheelCharacterization;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopSwerve;
@@ -20,8 +21,8 @@ import frc.robot.subsystems.SwerveDrive.DriveMode;
 
 public class RobotContainer {
 
-  private CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private CommandPS5Controller m_driverController =
+      new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
 
   private SwerveDrive m_driveBase = SwerveDrive.getInstance();
 
@@ -34,7 +35,7 @@ public class RobotContainer {
             OperatorConstants.kThrottleAxis,
             OperatorConstants.kStrafeAxis,
             OperatorConstants.kSteerAxis,
-            OperatorConstants.kDefaultSpeed,
+            OperatorConstants.kSlowSpeed,
             true,
             true));
 
@@ -44,7 +45,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     m_driverController
-        .leftBumper()
+        .L1()
         .whileTrue(
             new TeleopSwerve(
                 m_driverController,
@@ -56,7 +57,7 @@ public class RobotContainer {
                 true));
 
     m_driverController
-        .a()
+        .cross()
         .onTrue(Commands.runOnce(() -> m_driveBase.setDriveMode(DriveMode.XWHEELS), m_driveBase));
 
     // m_driverController
@@ -66,14 +67,15 @@ public class RobotContainer {
     // m_driverController.b().onTrue(new TurnToAngle(100));
     // m_driverController.x().onTrue(new TurnToAngle(200));
 
-    m_driverController.y().onTrue(new WheelCharacterization(m_driveBase));
+    m_driverController.circle().onTrue(new WheelCharacterization(m_driveBase));
 
     m_driverController
-        .start()
-        .onTrue(m_driveBase.characterizeDrivebase(() -> m_driverController.back().getAsBoolean()));
+        .create()
+        .onTrue(
+            m_driveBase.characterizeDrivebase(() -> m_driverController.options().getAsBoolean()));
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return AutoBuilder.buildAuto("New Auto");
   }
 }

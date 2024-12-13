@@ -262,7 +262,7 @@ public class SwerveDrive extends SubsystemBase {
               angleController.calculate(
                   Utils.getAdjustedYawDegrees(getYaw().getDegrees(), m_angleToSnap), 180);
           steer *= DriveConstants.kMaxModuleSpeed;
-          
+
           if (angleController.atSetpoint()) m_angleToSnap = Double.POSITIVE_INFINITY;
         }
 

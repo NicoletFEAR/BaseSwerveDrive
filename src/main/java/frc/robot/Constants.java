@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.PS5Controller.Axis;
 import frc.lib.team6328.swerve.ModuleLimits;
 import frc.robot.util.SwerveModuleConstants;
 
@@ -77,7 +77,7 @@ public final class Constants {
 
     public static final double kWheelDiameter =
         Units.inchesToMeters(
-            3.915); // Run the Wheel Characterization command to find the wheel diameter
+            3.955520515081079); // Run the Wheel Characterization command to find the wheel diameter
 
     public static final double kDriveRevToMeters = ((kWheelDiameter * Math.PI) / kDriveGearRatio);
     public static final double kDriveRpmToMetersPerSecond = kDriveRevToMeters / 60.0;
